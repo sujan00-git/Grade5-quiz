@@ -215,6 +215,17 @@
   </div>
 </section>
 
+<!-- ========== SECTION F ========== -->
+<section class="section">
+  <h2>F. Subtract Fractions</h2>
+  <div class="subtitle">Find a common denominator, then subtract the numerators. Write your answer as a fraction like <b>1/10</b>.</div>
+  <div id="sectionF"></div>
+  <div class="controls">
+    <button onclick="checkSectionF()">Check Answers</button>
+    <button class="secondary" onclick="revealSectionF()">Show Answers</button>
+  </div>
+</section>
+
 <!-- ========== OTHER QUESTIONS (to be organized) ========== -->
 <section class="section">
   <h2>More practice (to be sorted into sections)</h2>
@@ -596,6 +607,83 @@ function revealSectionE() {
   });
 }
 
+// ---------- SECTION F: Subtract Fractions ----------
+let sectionFData = [];
+
+// Pool of (a,b,c,d) where a/b - c/d is positive and non-zero and the
+// denominators differ. Keeps fractions student-friendly (small numbers).
+const FRACTION_PAIRS = [
+  [3, 5, 1, 2], [1, 2, 1, 3], [2, 3, 1, 4], [3, 4, 1, 2], [4, 5, 1, 3],
+  [5, 6, 1, 2], [2, 3, 1, 6], [3, 4, 1, 3], [5, 8, 1, 4], [7, 8, 1, 2],
+  [5, 6, 2, 3], [3, 4, 2, 5], [7, 10, 1, 5], [5, 6, 1, 4], [2, 3, 1, 2],
+  [4, 7, 1, 2], [5, 9, 1, 3], [3, 5, 1, 4], [7, 12, 1, 3], [5, 8, 1, 3],
+];
+
+function makeSubFractionQuestion() {
+  const [a, b, c, d] = pick(FRACTION_PAIRS);
+  const num = a * d - c * b;      // raw numerator (over b*d)
+  const den = b * d;              // raw denominator
+  const g = gcd(Math.abs(num), den);
+  const sNum = num / g, sDen = den / g;
+  return { a, b, c, d, num, den, sNum, sDen };
+}
+
+function generateSectionF() {
+  sectionFData = [];
+  const used = new Set();
+  while (sectionFData.length < 5) {
+    const q = makeSubFractionQuestion();
+    const key = `${q.a}/${q.b}-${q.c}/${q.d}`;
+    if (used.has(key)) continue;
+    used.add(key);
+    sectionFData.push(q);
+  }
+  renderSectionF();
+}
+
+function renderSectionF() {
+  const htmlFrac = (n, d) =>
+    `<span class="frac"><span class="num">${n}</span><span class="den">${d}</span></span>`;
+  const html = sectionFData.map((item, idx) => `
+    <div class="q-row">
+      <span class="q-num">${idx + 1}.</span>
+      <span class="q-prompt" style="font-family:inherit;">
+        ${htmlFrac(item.a, item.b)} &minus; ${htmlFrac(item.c, item.d)} =
+      </span>
+      <input type="text" id="sf-${idx}" placeholder="like 1/10">
+      <span class="feedback" id="sf-fb-${idx}"></span>
+    </div>
+  `).join('');
+  document.getElementById('sectionF').innerHTML = html;
+}
+
+function checkSectionF() {
+  sectionFData.forEach((item, idx) => {
+    const input = document.getElementById(`sf-${idx}`);
+    const fb = document.getElementById(`sf-fb-${idx}`);
+    const got = (input.value || '').trim();
+    const m = got.match(/^(-?\d+)\s*\/\s*(\d+)$/);
+    let ok = false;
+    if (m) {
+      const n = parseInt(m[1], 10), de = parseInt(m[2], 10);
+      // accept any equivalent fraction (cross-product match)
+      if (de !== 0) ok = n * item.den === item.num * de;
+    }
+    input.classList.remove('correct', 'wrong');
+    input.classList.add(ok ? 'correct' : 'wrong');
+    fb.textContent = ok ? '✓ Correct' : '✗ Try again';
+    fb.className = 'feedback ' + (ok ? 'correct' : 'wrong');
+  });
+}
+
+function revealSectionF() {
+  sectionFData.forEach((item, idx) => {
+    const fb = document.getElementById(`sf-fb-${idx}`);
+    fb.textContent = `= ${item.sNum}/${item.sDen}`;
+    fb.className = 'answer-reveal';
+  });
+}
+
 // ---------- OTHER (uncategorized) questions ----------
 let others = [];
 
@@ -799,8 +887,7 @@ function makeQ_SubFrac() {
 }
 
 function generateOthers() {
-  others = [makeQ_Shape(), makeQ_Tool(), makeQ_Budget(),
-            makeQ_Shop(), makeQ_SubFrac()];
+  others = [makeQ_Shape(), makeQ_Tool(), makeQ_Budget(), makeQ_Shop()];
   const html = others.map((q, i) => renderOther(q, i)).join('');
   document.getElementById('otherQuestions').innerHTML = html;
   others.forEach((q, i) => {
@@ -917,6 +1004,7 @@ function generateAll() {
   generateSectionC();
   generateSectionD();
   generateSectionE();
+  generateSectionF();
   generateOthers();
 }
 generateAll();
