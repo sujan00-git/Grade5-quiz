@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Represent Decimals - 5th Grade Math</title>
+<style>
+  :root {
+    --bg: #f5f8fc;
+    --card: #ffffff;
+    --ink: #1f2937;
+    --muted: #6b7280;
+    --accent: #2563eb;
+    --accent-soft: #dbeafe;
+    --good: #16a34a;
+    --bad: #dc2626;
+    --border: #e5e7eb;
+    --warm: #fef3c7;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    margin: 0;
+    padding: 24px;
+    line-height: 1.5;
+  }
+  header {
+    max-width: 960px;
+    margin: 0 auto 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  h1 { margin: 0; font-size: 24px; color: var(--accent); }
+  h2 { margin: 0 0 4px; font-size: 20px; }
+  .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+  .section {
+    max-width: 960px;
+    margin: 0 auto 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .intro-box {
+    background: var(--warm);
+    border-left: 4px solid #f59e0b;
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin: 10px 0 14px;
+  }
+  .intro-box h3 { margin: 0 0 6px; font-size: 16px; }
+  .intro-box .ex { font-family: 'Courier New', monospace; font-size: 16px; }
+  .intro-list { margin: 8px 0; padding-left: 20px; }
+  .intro-list li { margin-bottom: 10px; }
+  .q-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--border);
+    flex-wrap: wrap;
+  }
+  .q-row:last-child { border-bottom: none; }
+  .q-num { font-weight: 700; color: var(--accent); min-width: 28px; }
+  .q-prompt { font-size: 16px; min-width: 320px; flex: 1; }
+  input[type=text] {
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+    padding: 8px 12px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    width: 180px;
+    transition: border-color 0.15s;
+  }
+  input[type=text]:focus { outline: none; border-color: var(--accent); }
+  input.correct { border-color: var(--good); background: #f0fdf4; }
+  input.wrong { border-color: var(--bad); background: #fef2f2; }
+  .feedback { font-size: 14px; min-width: 100px; }
+  .feedback.correct { color: var(--good); font-weight: 600; }
+  .feedback.wrong { color: var(--bad); font-weight: 600; }
+  .answer-reveal { font-size: 14px; color: var(--muted); font-family: 'Courier New', monospace; }
+  button {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:hover { background: #1d4ed8; }
+  button.secondary {
+    background: white;
+    color: var(--accent);
+    border: 2px solid var(--accent);
+  }
+  button.secondary:hover { background: var(--accent-soft); }
+  .controls { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  .frac {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    vertical-align: middle;
+    margin: 0 2px;
+    font-size: 14px;
+  }
+  .frac .num { border-bottom: 1.5px solid var(--ink); padding: 0 6px; }
+  .frac .den { padding: 0 6px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Represent Decimals</h1>
+    <div class="subtitle">5th Grade Math &middot; Page 2 (Set 13)</div>
+  </div>
+  <button onclick="generateAll()">New Questions</button>
+</header>
+
+<section class="section">
+  <h2>I. Introduction</h2>
+  <div class="subtitle">There are three ways to represent a decimal number.</div>
+  <div class="intro-box">
+    <h3>Example: the number 5.1711</h3>
+    <ul class="intro-list">
+      <li><b>Standard form</b> — the whole decimal number:
+        <span class="ex">5.1711</span>
+      </li>
+      <li><b>Expanded form</b> — split by place value:<br>
+        <span class="ex">
+          5.1711 = 5 +
+          <span class="frac"><span class="num">1</span><span class="den">10</span></span> +
+          <span class="frac"><span class="num">7</span><span class="den">100</span></span> +
+          <span class="frac"><span class="num">1</span><span class="den">1000</span></span> +
+          <span class="frac"><span class="num">1</span><span class="den">10000</span></span>
+        </span>
+      </li>
+      <li><b>Word form</b> — write it in words:<br>
+        <span class="ex">&ldquo;Five and one thousand seven hundred eleven ten-thousandths&rdquo;</span>
+      </li>
+    </ul>
+  </div>
+  <div class="subtitle"><b>Place-value reminder:</b>
+    .1 = tenths &middot; .01 = hundredths &middot; .001 = thousandths &middot; .0001 = ten-thousandths
+  </div>
+</section>
+
+<section class="section">
+  <h2>II. Write these decimals in standard form</h2>
+  <div class="subtitle">Read the word form and type the matching decimal number.</div>
+  <div id="section2"></div>
+  <div class="controls">
+    <button onclick="checkSection2()">Check Answers</button>
+    <button class="secondary" onclick="revealSection2()">Show Answers</button>
+  </div>
+</section>
+
+<script>
+// ---------- helpers ----------
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function pick(arr) { return arr[randInt(0, arr.length - 1)]; }
+
+function wholeToWords(n) {
+  const ones = ['zero','one','two','three','four','five','six','seven','eight','nine',
+                'ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'];
+  const tens = ['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
+  if (n < 20) return ones[n];
+  if (n < 100) {
+    const t = Math.floor(n / 10), o = n % 10;
+    return o === 0 ? tens[t] : tens[t] + '-' + ones[o];
+  }
+  if (n < 1000) {
+    const h = Math.floor(n / 100), r = n % 100;
+    return ones[h] + ' hundred' + (r ? ' ' + wholeToWords(r) : '');
+  }
+  if (n < 10000) {
+    const th = Math.floor(n / 1000), r = n % 1000;
+    return ones[th] + ' thousand' + (r ? ' ' + wholeToWords(r) : '');
+  }
+  return String(n);
+}
+
+function placeName(len) {
+  // len = number of fractional digits
+  if (len === 1) return 'tenth';
+  if (len === 2) return 'hundredth';
+  if (len === 3) return 'thousandth';
+  if (len === 4) return 'ten-thousandth';
+  return 'hundred-thousandth';
+}
+
+function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+// Build a word-form prompt + the matching decimal answer.
+// shape: {whole: 0 or 1-digit or 2-digit, frac: 1..4}
+function makeWordPrompt(wholeDigits, fracDigits) {
+  // whole part
+  let whole = 0;
+  if (wholeDigits === 1) whole = randInt(1, 9);
+  else if (wholeDigits === 2) whole = randInt(10, 99);
+
+  // frac part: random digits, non-zero at the end so the length is honest
+  let frac = '';
+  for (let i = 0; i < fracDigits; i++) frac += String(randInt(0, 9));
+  // avoid trailing zero (would change the place-name) and avoid all-zero frac
+  while (frac[frac.length - 1] === '0') {
+    frac = frac.slice(0, -1) + String(randInt(1, 9));
+  }
+  if (parseInt(frac, 10) === 0) frac = frac.slice(0, -1) + '1';
+
+  const fracNum = parseInt(frac, 10);
+  const placeSingular = placeName(fracDigits);
+  const placeWord = placeSingular + (fracNum === 1 ? '' : 's');
+  const fracWords = wholeToWords(fracNum);
+
+  let prompt, answer;
+  if (whole === 0) {
+    prompt = capitalize(`${fracWords} ${placeWord}`);
+    answer = '0.' + frac;
+  } else {
+    const wholeWords = wholeToWords(whole);
+    prompt = capitalize(`${wholeWords} and ${fracWords} ${placeWord}`);
+    answer = whole + '.' + frac;
+  }
+  return { prompt, answer };
+}
+
+// ---------- Section II ----------
+let section2Data = [];
+function generateSection2() {
+  // mix of shapes similar to the book
+  const shapes = [
+    [0, 1],  // "Two tenths" -> 0.2
+    [0, 2],  // "Eighty-nine hundredths" -> 0.89
+    [0, 3],  // "Four hundred seventy-three thousandths" -> 0.473
+    [1, 4],  // "Six and nine thousand two hundred thirty-three ten-thousandths" -> 6.9233
+    [0, 3],  // "Seven thousandths" -> 0.007
+  ];
+  section2Data = shapes.map(([w, f]) => makeWordPrompt(w, f));
+  renderSection2();
+}
+function renderSection2() {
+  const html = section2Data.map((item, idx) => `
+    <div class="q-row">
+      <span class="q-num">${idx + 1}.</span>
+      <span class="q-prompt">${item.prompt}</span>
+      <input type="text" id="s2-${idx}" placeholder="decimal">
+      <span class="feedback" id="s2-fb-${idx}"></span>
+    </div>
+  `).join('');
+  document.getElementById('section2').innerHTML = html;
+}
+function checkSection2() {
+  section2Data.forEach((item, idx) => {
+    const input = document.getElementById(`s2-${idx}`);
+    const fb = document.getElementById(`s2-fb-${idx}`);
+    const got = (input.value || '').trim();
+    // numeric equality (treats 0.5 == .5) but preserves string check for empty
+    const correct = got !== '' && parseFloat(got) === parseFloat(item.answer);
+    if (correct) {
+      input.classList.add('correct');
+      input.classList.remove('wrong');
+      fb.textContent = '✓ Correct';
+      fb.className = 'feedback correct';
+    } else {
+      input.classList.add('wrong');
+      input.classList.remove('correct');
+      fb.textContent = '✗ Try again';
+      fb.className = 'feedback wrong';
+    }
+  });
+}
+function revealSection2() {
+  section2Data.forEach((item, idx) => {
+    const fb = document.getElementById(`s2-fb-${idx}`);
+    fb.textContent = '= ' + item.answer;
+    fb.className = 'answer-reveal';
+  });
+}
+
+function generateAll() { generateSection2(); }
+generateAll();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Decimal Practice - 5th Grade Math</title>
+<style>
+  :root {
+    --bg: #f5f8fc;
+    --card: #ffffff;
+    --ink: #1f2937;
+    --muted: #6b7280;
+    --accent: #2563eb;
+    --accent-soft: #dbeafe;
+    --good: #16a34a;
+    --bad: #dc2626;
+    --border: #e5e7eb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    margin: 0;
+    padding: 24px;
+    line-height: 1.5;
+  }
+  header {
+    max-width: 960px;
+    margin: 0 auto 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  h1 {
+    margin: 0;
+    font-size: 24px;
+    color: var(--accent);
+  }
+  h2 {
+    margin: 0 0 4px;
+    font-size: 20px;
+    color: var(--ink);
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+  .section {
+    max-width: 960px;
+    margin: 0 auto 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .q-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--border);
+    flex-wrap: wrap;
+  }
+  .q-row:last-child { border-bottom: none; }
+  .q-num {
+    font-weight: 700;
+    color: var(--accent);
+    min-width: 28px;
+  }
+  .q-prompt {
+    font-size: 17px;
+    min-width: 180px;
+    font-family: 'Courier New', monospace;
+  }
+  input[type=text] {
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+    padding: 8px 12px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    width: 360px;
+    max-width: 100%;
+    transition: border-color 0.15s;
+  }
+  input[type=text]:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  input.correct { border-color: var(--good); background: #f0fdf4; }
+  input.wrong { border-color: var(--bad); background: #fef2f2; }
+  .feedback {
+    font-size: 14px;
+    min-width: 120px;
+  }
+  .feedback.correct { color: var(--good); font-weight: 600; }
+  .feedback.wrong { color: var(--bad); font-weight: 600; }
+  .answer-reveal {
+    font-size: 14px;
+    color: var(--muted);
+    font-family: 'Courier New', monospace;
+  }
+  button {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  button:hover { background: #1d4ed8; }
+  button.secondary {
+    background: white;
+    color: var(--accent);
+    border: 2px solid var(--accent);
+  }
+  button.secondary:hover { background: var(--accent-soft); }
+  .controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  /* Matching section */
+  .match-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 8px;
+  }
+  .match-col h3 {
+    font-size: 14px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 0 8px;
+  }
+  .match-item {
+    padding: 12px 14px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background: white;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.15s;
+  }
+  .match-item .label {
+    font-weight: 700;
+    color: var(--accent);
+    min-width: 24px;
+  }
+  .match-item.selected {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .match-item.matched {
+    border-color: var(--good);
+    background: #f0fdf4;
+  }
+  .match-item.wrong-flash {
+    border-color: var(--bad);
+    background: #fef2f2;
+  }
+  .match-item .pair-tag {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--good);
+    font-weight: 700;
+  }
+  @media (max-width: 600px) {
+    .match-wrap { grid-template-columns: 1fr; }
+    input[type=text] { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Decimal Practice</h1>
+    <div class="subtitle">5th Grade Math &middot; Page 1 (Sections III, IV, V)</div>
+  </div>
+  <button onclick="generateAll()">New Questions</button>
+</header>
+
+<section class="section">
+  <h2>III. Write these decimals in expanded form</h2>
+  <div class="subtitle">Example: 12.63 = 1&times;10 + 2&times;1 + 6&times;0.1 + 3&times;0.01</div>
+  <div id="section3"></div>
+  <div class="controls">
+    <button onclick="checkSection3()">Check Answers</button>
+    <button class="secondary" onclick="revealSection3()">Show Answers</button>
+  </div>
+</section>
+
+<section class="section">
+  <h2>IV. Write the standard decimal form</h2>
+  <div class="subtitle">Example: 9&times;1 + 1&times;0.1 + 3&times;0.01 = 9.13</div>
+  <div id="section4"></div>
+  <div class="controls">
+    <button onclick="checkSection4()">Check Answers</button>
+    <button class="secondary" onclick="revealSection4()">Show Answers</button>
+  </div>
+</section>
+
+<section class="section">
+  <h2>V. Matching</h2>
+  <div class="subtitle">Click an item on the left, then click its match on the right.</div>
+  <div class="match-wrap">
+    <div class="match-col">
+      <h3>Questions</h3>
+      <div id="matchLeft"></div>
+    </div>
+    <div class="match-col">
+      <h3>Answers</h3>
+      <div id="matchRight"></div>
+    </div>
+  </div>
+  <div class="controls">
+    <button class="secondary" onclick="resetMatching()">Reset Matches</button>
+  </div>
+</section>
+
+<script>
+// ---------- helpers ----------
+function randInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function pick(arr) { return arr[randInt(0, arr.length - 1)]; }
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Build a random decimal number. Returns { value: "12.63", parts: [[10,1],[1,2],[0.1,6],[0.01,3]] }
+// `whole` = how many whole-number digits (1 or 2), `frac` = how many fractional digits (2 or 3).
+function makeDecimal(whole, frac) {
+  const digits = [];
+  // whole-digit part: at least one non-zero leading digit
+  for (let i = 0; i < whole; i++) {
+    if (i === 0) digits.push({ place: Math.pow(10, whole - 1), d: randInt(1, 9) });
+    else digits.push({ place: Math.pow(10, whole - 1 - i), d: randInt(0, 9) });
+  }
+  // fractional-digit part
+  for (let i = 0; i < frac; i++) {
+    digits.push({ place: Math.pow(10, -(i + 1)), d: randInt(0, 9) });
+  }
+  // keep last fractional digit non-zero so number ends cleanly like 7.15 not 7.10
+  if (digits[digits.length - 1].d === 0) digits[digits.length - 1].d = randInt(1, 9);
+
+  const wholePart = digits.slice(0, whole).map(x => x.d).join('');
+  const fracPart = digits.slice(whole).map(x => x.d).join('');
+  const value = wholePart + '.' + fracPart;
+  const parts = digits.map(x => [x.place, x.d]);
+  return { value, parts };
+}
+
+function placeToString(p) {
+  if (p >= 1) return String(p);
+  // 0.1, 0.01, 0.001
+  const n = Math.round(-Math.log10(p));
+  return '0.' + '0'.repeat(n - 1) + '1';
+}
+
+function expandedForm(parts) {
+  return parts.map(([p, d]) => `${d}×${placeToString(p)}`).join(' + ');
+}
+
+// Normalise student input of expanded form so order and spacing don't matter.
+// Accept x, X, * as multiplication; collapse whitespace.
+function normalizeExpanded(str) {
+  if (!str) return '';
+  const terms = str
+    .toLowerCase()
+    .replace(/\s+/g, '')
+    .replace(/×/g, 'x')
+    .replace(/\*/g, 'x')
+    .split('+')
+    .filter(Boolean);
+  // Convert each term "3x0.01" -> numeric product value, then sort
+  const nums = terms.map(t => {
+    const [a, b] = t.split('x');
+    const av = parseFloat(a);
+    const bv = parseFloat(b);
+    if (isNaN(av) || isNaN(bv)) return NaN;
+    return av * bv;
+  });
+  if (nums.some(isNaN)) return 'INVALID';
+  return nums.slice().sort((a, b) => b - a).map(n => n.toFixed(4)).join('|');
+}
+
+function expectedExpandedKey(parts) {
+  return parts
+    .map(([p, d]) => p * d)
+    .slice()
+    .sort((a, b) => b - a)
+    .map(n => n.toFixed(4))
+    .join('|');
+}
+
+// Sum of parts, formatted to the right number of decimals
+function partsToDecimal(parts) {
+  const sum = parts.reduce((acc, [p, d]) => acc + p * d, 0);
+  const maxFrac = parts.reduce((m, [p]) => {
+    if (p < 1) return Math.max(m, Math.round(-Math.log10(p)));
+    return m;
+  }, 0);
+  return sum.toFixed(maxFrac);
+}
+
+// Number -> English words (works for our small decimals)
+function wholeToWords(n) {
+  const ones = ['zero','one','two','three','four','five','six','seven','eight','nine',
+                'ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'];
+  const tens = ['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
+  if (n < 20) return ones[n];
+  if (n < 100) {
+    const t = Math.floor(n / 10), o = n % 10;
+    return o === 0 ? tens[t] : tens[t] + '-' + ones[o];
+  }
+  if (n < 1000) {
+    const h = Math.floor(n / 100), r = n % 100;
+    return ones[h] + ' hundred' + (r ? ' ' + wholeToWords(r) : '');
+  }
+  return String(n);
+}
+
+function fractionNameSingular(frac) {
+  // frac is a string like "073", length 1..3
+  const n = frac.length;
+  if (n === 1) return 'tenth';
+  if (n === 2) return 'hundredth';
+  return 'thousandth';
+}
+
+function decimalToWords(decStr) {
+  const [w, f] = decStr.split('.');
+  const whole = parseInt(w, 10);
+  const fracNum = parseInt(f, 10);
+  const fracName = fractionNameSingular(f) + (fracNum === 1 ? '' : 's');
+  const wholeWords = wholeToWords(whole);
+  const fracWords = wholeToWords(fracNum);
+  if (whole === 0) {
+    return capitalize(`${fracWords} ${fracName}`);
+  }
+  return capitalize(`${wholeWords} and ${fracWords} ${fracName}`);
+}
+
+function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+// ---------- Section III ----------
+let section3Data = [];
+function generateSection3() {
+  section3Data = [];
+  const shapes = [[2,2],[1,3],[2,2],[2,2],[1,3]];
+  for (let i = 0; i < 5; i++) {
+    const [w, f] = shapes[i];
+    section3Data.push(makeDecimal(w, f));
+  }
+  renderSection3();
+}
+function renderSection3() {
+  const html = section3Data.map((item, idx) => `
+    <div class="q-row">
+      <span class="q-num">${idx + 1}.</span>
+      <span class="q-prompt">${item.value}</span>
+      <input type="text" id="s3-${idx}" placeholder="e.g. 1x10 + 2x1 + 6x0.1 + 3x0.01">
+      <span class="feedback" id="s3-fb-${idx}"></span>
+    </div>
+  `).join('');
+  document.getElementById('section3').innerHTML = html;
+}
+function checkSection3() {
+  section3Data.forEach((item, idx) => {
+    const input = document.getElementById(`s3-${idx}`);
+    const fb = document.getElementById(`s3-fb-${idx}`);
+    const got = normalizeExpanded(input.value);
+    const want = expectedExpandedKey(item.parts);
+    if (got === want) {
+      input.classList.add('correct');
+      input.classList.remove('wrong');
+      fb.textContent = '✓ Correct';
+      fb.className = 'feedback correct';
+    } else {
+      input.classList.add('wrong');
+      input.classList.remove('correct');
+      fb.textContent = '✗ Try again';
+      fb.className = 'feedback wrong';
+    }
+  });
+}
+function revealSection3() {
+  section3Data.forEach((item, idx) => {
+    const fb = document.getElementById(`s3-fb-${idx}`);
+    fb.textContent = expandedForm(item.parts);
+    fb.className = 'answer-reveal';
+  });
+}
+
+// ---------- Section IV ----------
+let section4Data = [];
+function generateSection4() {
+  section4Data = [];
+  const shapes = [[1,2],[1,2],[1,3],[2,2],[2,3]];
+  for (let i = 0; i < 5; i++) {
+    const [w, f] = shapes[i];
+    section4Data.push(makeDecimal(w, f));
+  }
+  renderSection4();
+}
+function renderSection4() {
+  const html = section4Data.map((item, idx) => `
+    <div class="q-row">
+      <span class="q-num">${idx + 1}.</span>
+      <span class="q-prompt">${expandedForm(item.parts)}</span>
+      <input type="text" id="s4-${idx}" placeholder="decimal answer">
+      <span class="feedback" id="s4-fb-${idx}"></span>
+    </div>
+  `).join('');
+  document.getElementById('section4').innerHTML = html;
+}
+function checkSection4() {
+  section4Data.forEach((item, idx) => {
+    const input = document.getElementById(`s4-${idx}`);
+    const fb = document.getElementById(`s4-fb-${idx}`);
+    const want = partsToDecimal(item.parts);
+    const got = (input.value || '').trim();
+    if (parseFloat(got) === parseFloat(want) && got !== '') {
+      input.classList.add('correct');
+      input.classList.remove('wrong');
+      fb.textContent = '✓ Correct';
+      fb.className = 'feedback correct';
+    } else {
+      input.classList.add('wrong');
+      input.classList.remove('correct');
+      fb.textContent = '✗ Try again';
+      fb.className = 'feedback wrong';
+    }
+  });
+}
+function revealSection4() {
+  section4Data.forEach((item, idx) => {
+    const fb = document.getElementById(`s4-fb-${idx}`);
+    fb.textContent = '= ' + partsToDecimal(item.parts);
+    fb.className = 'answer-reveal';
+  });
+}
+
+// ---------- Section V (Matching) ----------
+let matchPairs = [];       // [{id, prompt, answer}]
+let matchRightOrder = [];  // shuffled copy of ids for the right column
+let matchedIds = new Set();
+let selectedLeftId = null;
+
+function generateSection5() {
+  matchPairs = [];
+  matchedIds = new Set();
+  selectedLeftId = null;
+
+  // 5 varied items: mix of expanded form, word form, and plain decimal prompts
+  const styles = shuffle(['expanded', 'word', 'expanded', 'word', 'expanded']);
+  const used = new Set();
+
+  for (let i = 0; i < 5; i++) {
+    let item, decimalKey;
+    let tries = 0;
+    do {
+      const w = pick([1, 2]);
+      const f = pick([2, 2, 3]);
+      item = makeDecimal(w, f);
+      decimalKey = partsToDecimal(item.parts);
+      tries++;
+    } while (used.has(decimalKey) && tries < 20);
+    used.add(decimalKey);
+
+    const decimal = partsToDecimal(item.parts);
+    let prompt, answer;
+    if (styles[i] === 'expanded') {
+      prompt = expandedForm(item.parts);
+      answer = decimal;
+    } else {
+      prompt = decimalToWords(decimal);
+      answer = decimal;
+    }
+    matchPairs.push({ id: i, prompt, answer });
+  }
+
+  matchRightOrder = shuffle(matchPairs.map(p => p.id));
+  renderMatching();
+}
+
+function renderMatching() {
+  const leftLabels = ['16','17','18','19','20'];
+  const rightLabels = ['A','B','C','D','E'];
+  const left = matchPairs.map((p, i) => `
+    <div class="match-item ${matchedIds.has(p.id) ? 'matched' : ''} ${selectedLeftId === p.id ? 'selected' : ''}"
+         onclick="selectLeft(${p.id})" id="ml-${p.id}">
+      <span class="label">${leftLabels[i]}.</span>
+      <span>${p.prompt}</span>
+      ${matchedIds.has(p.id) ? '<span class="pair-tag">✓</span>' : ''}
+    </div>
+  `).join('');
+  const right = matchRightOrder.map((id, i) => {
+    const p = matchPairs.find(x => x.id === id);
+    return `
+      <div class="match-item ${matchedIds.has(id) ? 'matched' : ''}"
+           onclick="selectRight(${id})" id="mr-${id}">
+        <span class="label">${rightLabels[i]})</span>
+        <span>${p.answer}</span>
+        ${matchedIds.has(id) ? '<span class="pair-tag">✓</span>' : ''}
+      </div>
+    `;
+  }).join('');
+  document.getElementById('matchLeft').innerHTML = left;
+  document.getElementById('matchRight').innerHTML = right;
+}
+
+function selectLeft(id) {
+  if (matchedIds.has(id)) return;
+  selectedLeftId = id;
+  renderMatching();
+}
+function selectRight(id) {
+  if (matchedIds.has(id)) return;
+  if (selectedLeftId === null) return;
+  if (selectedLeftId === id) {
+    matchedIds.add(id);
+    selectedLeftId = null;
+    renderMatching();
+  } else {
+    const el = document.getElementById(`mr-${id}`);
+    if (el) {
+      el.classList.add('wrong-flash');
+      setTimeout(() => el.classList.remove('wrong-flash'), 500);
+    }
+  }
+}
+function resetMatching() {
+  matchedIds = new Set();
+  selectedLeftId = null;
+  renderMatching();
+}
+
+// ---------- Init ----------
+function generateAll() {
+  generateSection3();
+  generateSection4();
+  generateSection5();
+}
+generateAll();
+</script>
+
+</body>
+</html>

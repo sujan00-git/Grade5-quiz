@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Problem Solving - 5th Grade Math</title>
+<style>
+  :root {
+    --bg: #f5f8fc;
+    --card: #ffffff;
+    --ink: #1f2937;
+    --muted: #6b7280;
+    --accent: #2563eb;
+    --accent-soft: #dbeafe;
+    --good: #16a34a;
+    --bad: #dc2626;
+    --border: #e5e7eb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    margin: 0;
+    padding: 24px;
+    line-height: 1.5;
+  }
+  header {
+    max-width: 960px;
+    margin: 0 auto 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  h1 { margin: 0; font-size: 24px; color: var(--accent); }
+  .subtitle { color: var(--muted); font-size: 14px; }
+  .q-card {
+    max-width: 960px;
+    margin: 0 auto 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: 36px 1fr auto;
+    gap: 14px;
+    align-items: center;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .q-num {
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 18px;
+  }
+  .q-body { font-size: 16px; }
+  .q-prompt-line { margin-bottom: 6px; }
+  .q-prompt-line b { font-weight: 700; }
+  .q-prompt-line .math { font-family: 'Courier New', monospace; }
+  .q-input {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+  input[type=text] {
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+    padding: 8px 12px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    width: 180px;
+    transition: border-color 0.15s;
+  }
+  input.inline {
+    width: 60px;
+    padding: 4px 6px;
+    font-size: 14px;
+    margin: 0 2px;
+  }
+  input[type=text]:focus { outline: none; border-color: var(--accent); }
+  input.correct { border-color: var(--good); background: #f0fdf4; }
+  input.wrong { border-color: var(--bad); background: #fef2f2; }
+  .feedback { font-size: 13px; min-width: 100px; text-align: right; }
+  .feedback.correct { color: var(--good); font-weight: 600; }
+  .feedback.wrong { color: var(--bad); font-weight: 600; }
+  .answer-reveal { font-size: 13px; color: var(--muted); font-family: 'Courier New', monospace; }
+  button {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:hover { background: #1d4ed8; }
+  button.secondary {
+    background: white;
+    color: var(--accent);
+    border: 2px solid var(--accent);
+  }
+  button.secondary:hover { background: var(--accent-soft); }
+  .controls {
+    max-width: 960px;
+    margin: 20px auto;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .mc-list { list-style: none; padding-left: 0; margin: 6px 0 0; }
+  .mc-list li { padding: 2px 0; }
+  .mc-list label { cursor: pointer; }
+  .frac {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    vertical-align: middle;
+    margin: 0 3px;
+    font-size: 15px;
+  }
+  .frac .num { border-bottom: 1.5px solid var(--ink); padding: 0 6px; }
+  .frac .den { padding: 0 6px; }
+  .rect-svg { display: block; margin: 8px 0; }
+  @media (max-width: 700px) {
+    .q-card { grid-template-columns: 32px 1fr; }
+    .q-input { grid-column: 2; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Problem Solving</h1>
+    <div class="subtitle">5th Grade Math &middot; Page 3 (Set 13 - mixed review)</div>
+  </div>
+  <button onclick="generateAll()">New Questions</button>
+</header>
+
+<div id="questions"></div>
+
+<div class="controls">
+  <button onclick="checkAll()">Check All Answers</button>
+  <button class="secondary" onclick="revealAll()">Show All Answers</button>
+</div>
+
+<script>
+// ---------- helpers ----------
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function pick(arr) { return arr[randInt(0, arr.length - 1)]; }
+function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+
+// Round number x to a given place (100, 1000, 10, etc).
+function roundToPlace(x, place) {
+  return Math.round(x / place) * place;
+}
+
+// ---------- Question definitions ----------
+// Each question: { render: () -> html, check: (inputs) -> boolean, answer: () -> string }
+let questions = [];
+
+function makeQ1() {
+  // Order of operations: a × b + c ÷ d  (make c divisible by d)
+  const a = randInt(20, 60);
+  const b = randInt(3, 6);
+  const d = randInt(3, 9);
+  const q = randInt(5, 15);
+  const c = d * q;
+  const answer = a * b + c / d;
+  return {
+    kind: 'single',
+    prompt: `Calculate: <span class="math">${a} × ${b} + ${c} ÷ ${d}</span>`,
+    answer: String(answer),
+    check: v => parseFloat((v || '').trim()) === answer,
+  };
+}
+
+function makeQ2() {
+  // Name the shape of an everyday object
+  const options = [
+    { obj: 'a dice', shape: 'cube' },
+    { obj: 'a soccer ball', shape: 'sphere' },
+    { obj: 'a can of soup', shape: 'cylinder' },
+    { obj: 'an ice-cream cone', shape: 'cone' },
+    { obj: 'a cereal box', shape: 'rectangular prism' },
+    { obj: 'an egyptian pyramid', shape: 'pyramid' },
+  ];
+  const o = pick(options);
+  return {
+    kind: 'single',
+    prompt: `Name the shape of ${o.obj}.`,
+    answer: o.shape,
+    check: v => {
+      const got = (v || '').trim().toLowerCase();
+      return got === o.shape || got === o.shape.replace(' ', '-');
+    },
+  };
+}
+
+function makeQ3() {
+  // Multiple-choice: which tool for which measurement
+  const choices = [
+    { what: 'mass', correct: 'A scale', others: ['A ruler', 'A spoon', 'A clock'] },
+    { what: 'length', correct: 'A ruler', others: ['A scale', 'A thermometer', 'A cup'] },
+    { what: 'temperature', correct: 'A thermometer', others: ['A ruler', 'A scale', 'A stopwatch'] },
+    { what: 'volume of water', correct: 'A measuring cup', others: ['A ruler', 'A scale', 'A thermometer'] },
+    { what: 'time', correct: 'A stopwatch', others: ['A ruler', 'A scale', 'A thermometer'] },
+  ];
+  const c = pick(choices);
+  const opts = [c.correct, ...pick([c.others.slice(0, 2), c.others.slice(1, 3), [c.others[0], c.others[2]]])];
+  // Shuffle options
+  for (let i = opts.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [opts[i], opts[j]] = [opts[j], opts[i]];
+  }
+  const letters = ['A', 'B', 'C'];
+  return {
+    kind: 'mc',
+    prompt: `Which tool will you use to find ${c.what}?`,
+    options: opts.map((text, i) => ({ letter: letters[i], text })),
+    answer: c.correct,
+    check: v => v === c.correct,
+  };
+}
+
+function makeQ4() {
+  // Round two numbers to a given place
+  const places = [
+    { name: 'nearest ten', value: 10 },
+    { name: 'nearest hundred', value: 100 },
+    { name: 'nearest thousand', value: 1000 },
+  ];
+  const p = pick(places);
+  const n1 = randInt(1000, 99999);
+  const n2 = randInt(1000, 99999);
+  return {
+    kind: 'two',
+    prompt: `Round to the ${p.name}:<br>&nbsp;&nbsp;&nbsp;<span class="math">${n1}</span> → <input class="inline" id="sub-a">
+            <br>&nbsp;&nbsp;&nbsp;<span class="math">${n2}</span> → <input class="inline" id="sub-b">`,
+    expects: [String(roundToPlace(n1, p.value)), String(roundToPlace(n2, p.value))],
+    answer: `${roundToPlace(n1, p.value)} and ${roundToPlace(n2, p.value)}`,
+    check: (va, vb) =>
+      parseFloat((va || '').trim()) === roundToPlace(n1, p.value) &&
+      parseFloat((vb || '').trim()) === roundToPlace(n2, p.value),
+  };
+}
+
+function makeQ5() {
+  // Budget / division word problem
+  const names = ['Anne', 'Ben', 'Carla', 'Danny', 'Eva', 'Frank'];
+  const items = [
+    { s: 'rose', p: 'roses' },
+    { s: 'notebook', p: 'notebooks' },
+    { s: 'cookie', p: 'cookies' },
+    { s: 'pencil', p: 'pencils' },
+    { s: 'muffin', p: 'muffins' },
+  ];
+  const name = pick(names);
+  const item = pick(items);
+  const unit = randInt(2, 5);
+  const count = randInt(5, 25);
+  const budget = unit * count;
+  return {
+    kind: 'single',
+    prompt: `${name} has a budget of $${budget}. A ${item.s} costs $${unit}. How many ${item.p} can ${name.toLowerCase() === 'eva' ? 'she' : 'they'} buy with the budget?`,
+    answer: String(count),
+    check: v => parseFloat((v || '').trim()) === count,
+  };
+}
+
+function makeQ6() {
+  // Multiplication word problem
+  const names = ['Mrs. Miller', 'Mr. Lee', 'Ms. Patel', 'Mr. Nguyen', 'Mrs. Garcia'];
+  const items = ['boxes of apples', 'crates of oranges', 'bags of rice', 'packs of pens', 'bundles of flowers'];
+  const n = pick(names);
+  const item = pick(items);
+  const count = randInt(20, 95);
+  const cost = randInt(15, 60);
+  const total = count * cost;
+  return {
+    kind: 'single',
+    prompt: `${n} bought ${count} ${item} for the shop. Each costs $${cost}. How much did ${n.split(' ')[0] === 'Mr.' ? 'he' : 'she'} have to pay in total?`,
+    answer: '$' + total,
+    check: v => {
+      const got = (v || '').trim().replace(/^\$/, '').replace(/,/g, '');
+      return parseFloat(got) === total;
+    },
+  };
+}
+
+function makeQ7() {
+  // Fill in blanks: standard = _ × 100 + _ × 10 + _ × 1 + _ × 0.1 + _ × 0.01 + _ × 0.001
+  const h = randInt(1, 9);
+  const t = randInt(0, 9);
+  const u = randInt(0, 9);
+  const t1 = randInt(0, 9);
+  const h1 = randInt(0, 9);
+  const th1 = randInt(1, 9);
+  const value = `${h}${t}${u}.${t1}${h1}${th1}`;
+  return {
+    kind: 'fill',
+    prompt: `Fill in blank:<br>
+      <span class="math">${value} =
+        <input class="inline" id="sub-a"> × 100 +
+        <input class="inline" id="sub-b"> × 10 +
+        <input class="inline" id="sub-c"> × 1 +
+        <input class="inline" id="sub-d"> × 0.1 +
+        <input class="inline" id="sub-e"> × 0.01 +
+        <input class="inline" id="sub-f"> × 0.001
+      </span>`,
+    expects: [String(h), String(t), String(u), String(t1), String(h1), String(th1)],
+    answer: `${h}, ${t}, ${u}, ${t1}, ${h1}, ${th1}`,
+    check: (...vals) => {
+      const want = [h, t, u, t1, h1, th1];
+      return want.every((w, i) => parseFloat((vals[i] || '').trim()) === w);
+    },
+  };
+}
+
+function makeQ8() {
+  // Partition: 629.456 = _ hundreds + _ tens + _ units + _ tenths + _ hundredths + _ thousandths
+  const h = randInt(1, 9);
+  const t = randInt(0, 9);
+  const u = randInt(0, 9);
+  const t1 = randInt(0, 9);
+  const h1 = randInt(0, 9);
+  const th1 = randInt(1, 9);
+  const value = `${h}${t}${u}.${t1}${h1}${th1}`;
+  return {
+    kind: 'fill',
+    prompt: `Partition the number:<br>
+      <span class="math">${value} =
+        <input class="inline" id="sub-a"> hundreds +
+        <input class="inline" id="sub-b"> tens +
+        <input class="inline" id="sub-c"> units +
+        <input class="inline" id="sub-d"> tenths +
+        <input class="inline" id="sub-e"> hundredths +
+        <input class="inline" id="sub-f"> thousandths
+      </span>`,
+    expects: [String(h), String(t), String(u), String(t1), String(h1), String(th1)],
+    answer: `${h}, ${t}, ${u}, ${t1}, ${h1}, ${th1}`,
+    check: (...vals) => {
+      const want = [h, t, u, t1, h1, th1];
+      return want.every((w, i) => parseFloat((vals[i] || '').trim()) === w);
+    },
+  };
+}
+
+function makeQ9() {
+  // Perimeter of rectangle
+  const length = randInt(6, 25);
+  const width = randInt(3, length - 1);
+  const perim = 2 * (length + width);
+  const svg = `
+    <svg class="rect-svg" width="200" height="110" viewBox="0 0 200 110">
+      <rect x="20" y="20" width="160" height="70" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+      <text x="100" y="12" text-anchor="middle" font-family="Segoe UI" font-size="14" fill="#1f2937">${length} cm</text>
+      <text x="192" y="60" text-anchor="start" font-family="Segoe UI" font-size="14" fill="#1f2937">${width} cm</text>
+    </svg>
+  `;
+  return {
+    kind: 'single',
+    prompt: `Find the perimeter of the rectangle:${svg}`,
+    answer: perim + ' cm',
+    check: v => {
+      const got = (v || '').trim().toLowerCase().replace(/\s*cm$/, '');
+      return parseFloat(got) === perim;
+    },
+  };
+}
+
+function makeQ10() {
+  // Subtract fractions with different denominators
+  const pairs = [
+    [3, 5, 1, 2], [1, 2, 1, 3], [2, 3, 1, 4], [3, 4, 1, 2], [4, 5, 1, 3],
+    [5, 6, 1, 2], [2, 3, 1, 6], [3, 4, 1, 3], [5, 8, 1, 4],
+  ];
+  const [a, b, c, d] = pick(pairs);
+  // (a/b) - (c/d) = (a*d - c*b) / (b*d), simplified
+  const num = a * d - c * b;
+  const den = b * d;
+  const g = gcd(Math.abs(num), den);
+  const sNum = num / g;
+  const sDen = den / g;
+  const htmlFrac = (n, d) =>
+    `<span class="frac"><span class="num">${n}</span><span class="den">${d}</span></span>`;
+  return {
+    kind: 'single',
+    prompt: `Subtract: ${htmlFrac(a, b)} &minus; ${htmlFrac(c, d)}
+             <br><span class="subtitle">Give the answer as a fraction like <span class="math">${sNum}/${sDen}</span>.</span>`,
+    answer: `${sNum}/${sDen}`,
+    check: v => {
+      const got = (v || '').trim();
+      const m = got.match(/^(-?\d+)\s*\/\s*(\d+)$/);
+      if (!m) return false;
+      const n = parseInt(m[1], 10), de = parseInt(m[2], 10);
+      if (de === 0) return false;
+      // compare as cross-product (student can give any equivalent fraction)
+      return n * den === num * de;
+    },
+  };
+}
+
+// ---------- rendering ----------
+function renderQuestion(q, idx) {
+  const num = idx + 1;
+  let inputHtml = '';
+  if (q.kind === 'single') {
+    inputHtml = `
+      <input type="text" id="ans-${idx}" placeholder="answer">
+      <span class="feedback" id="fb-${idx}"></span>
+    `;
+    return `
+      <div class="q-card">
+        <div class="q-num">${num}.</div>
+        <div class="q-body">${q.prompt}</div>
+        <div class="q-input">${inputHtml}</div>
+      </div>`;
+  }
+  if (q.kind === 'mc') {
+    const items = q.options.map(o => `
+      <li>
+        <label>
+          <input type="radio" name="mc-${idx}" value="${o.text}">
+          <b>${o.letter}.</b> ${o.text}
+        </label>
+      </li>
+    `).join('');
+    return `
+      <div class="q-card">
+        <div class="q-num">${num}.</div>
+        <div class="q-body">
+          ${q.prompt}
+          <ul class="mc-list">${items}</ul>
+        </div>
+        <div class="q-input">
+          <span class="feedback" id="fb-${idx}"></span>
+        </div>
+      </div>`;
+  }
+  // 'two' or 'fill' — inline inputs are already in the prompt (with sub-a, sub-b, ...)
+  return `
+    <div class="q-card">
+      <div class="q-num">${num}.</div>
+      <div class="q-body" id="body-${idx}">${q.prompt}</div>
+      <div class="q-input">
+        <span class="feedback" id="fb-${idx}"></span>
+      </div>
+    </div>`;
+}
+
+function postProcessInlineIds(idx) {
+  // Rename placeholder ids "sub-a".."sub-f" to unique ids per question
+  const body = document.getElementById(`body-${idx}`);
+  if (!body) return;
+  ['sub-a','sub-b','sub-c','sub-d','sub-e','sub-f'].forEach(id => {
+    const el = body.querySelector('#' + id);
+    if (el) el.id = `ans-${idx}-${id}`;
+  });
+}
+
+function generateAll() {
+  questions = [makeQ1(), makeQ2(), makeQ3(), makeQ4(), makeQ5(),
+               makeQ6(), makeQ7(), makeQ8(), makeQ9(), makeQ10()];
+  const html = questions.map((q, i) => renderQuestion(q, i)).join('');
+  document.getElementById('questions').innerHTML = html;
+  questions.forEach((q, i) => {
+    if (q.kind === 'two' || q.kind === 'fill') postProcessInlineIds(i);
+  });
+}
+
+function getVal(idx, suffix) {
+  const el = document.getElementById(`ans-${idx}${suffix ? '-' + suffix : ''}`);
+  return el ? el.value : '';
+}
+
+function markInput(el, ok) {
+  if (!el) return;
+  el.classList.remove('correct', 'wrong');
+  el.classList.add(ok ? 'correct' : 'wrong');
+}
+
+function checkOne(q, idx) {
+  const fb = document.getElementById(`fb-${idx}`);
+  let ok = false;
+  if (q.kind === 'single') {
+    const el = document.getElementById(`ans-${idx}`);
+    ok = q.check(el.value);
+    markInput(el, ok);
+  } else if (q.kind === 'mc') {
+    const sel = document.querySelector(`input[name="mc-${idx}"]:checked`);
+    ok = sel ? q.check(sel.value) : false;
+  } else if (q.kind === 'two') {
+    const a = getVal(idx, 'sub-a'), b = getVal(idx, 'sub-b');
+    ok = q.check(a, b);
+    markInput(document.getElementById(`ans-${idx}-sub-a`), parseFloat((a||'').trim()) === parseFloat(q.expects[0]));
+    markInput(document.getElementById(`ans-${idx}-sub-b`), parseFloat((b||'').trim()) === parseFloat(q.expects[1]));
+  } else if (q.kind === 'fill') {
+    const keys = ['sub-a','sub-b','sub-c','sub-d','sub-e','sub-f'];
+    const vals = keys.map(k => getVal(idx, k));
+    ok = q.check(...vals);
+    keys.forEach((k, i) => {
+      const el = document.getElementById(`ans-${idx}-${k}`);
+      if (el) markInput(el, parseFloat((vals[i]||'').trim()) === parseFloat(q.expects[i]));
+    });
+  }
+  fb.textContent = ok ? '✓ Correct' : '✗ Try again';
+  fb.className = 'feedback ' + (ok ? 'correct' : 'wrong');
+}
+
+function checkAll() {
+  questions.forEach((q, i) => checkOne(q, i));
+}
+
+function revealAll() {
+  questions.forEach((q, i) => {
+    const fb = document.getElementById(`fb-${i}`);
+    fb.textContent = '= ' + q.answer;
+    fb.className = 'answer-reveal';
+  });
+}
+
+generateAll();
+</script>
+
+</body>
+</html>
