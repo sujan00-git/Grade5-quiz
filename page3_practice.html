@@ -171,6 +171,17 @@
   </div>
 </section>
 
+<!-- ========== SECTION B ========== -->
+<section class="section">
+  <h2>B. Round to the Nearest Hundred</h2>
+  <div class="subtitle">Look at the <b>tens</b> digit: if it's 5 or more, round up; if less than 5, round down.</div>
+  <div id="sectionB"></div>
+  <div class="controls">
+    <button onclick="checkSectionB()">Check Answers</button>
+    <button class="secondary" onclick="revealSectionB()">Show Answers</button>
+  </div>
+</section>
+
 <!-- ========== OTHER QUESTIONS (to be organized) ========== -->
 <section class="section">
   <h2>More practice (to be sorted into sections)</h2>
@@ -274,7 +285,67 @@ function revealSectionA() {
   });
 }
 
-// ---------- OTHER (uncategorized) questions — the old Q2..Q10 ----------
+// ---------- SECTION B: Round to the Nearest Hundred ----------
+let sectionBData = [];
+
+function makeRoundHundredQuestion() {
+  // Vary the magnitude so the student sees 3-digit, 4-digit, and 5-digit numbers.
+  const magnitudes = [
+    () => randInt(150, 999),      // 3-digit
+    () => randInt(1000, 9999),    // 4-digit
+    () => randInt(10000, 99999),  // 5-digit
+  ];
+  const n = pick(magnitudes)();
+  return { n, answer: roundToPlace(n, 100) };
+}
+
+function generateSectionB() {
+  sectionBData = [];
+  const used = new Set();
+  while (sectionBData.length < 5) {
+    const q = makeRoundHundredQuestion();
+    if (used.has(q.n)) continue;
+    used.add(q.n);
+    sectionBData.push(q);
+  }
+  renderSectionB();
+}
+
+function renderSectionB() {
+  const html = sectionBData.map((item, idx) => `
+    <div class="q-row">
+      <span class="q-num">${idx + 1}.</span>
+      <span class="q-prompt">${item.n.toLocaleString()} &rarr;</span>
+      <input type="text" id="sb-${idx}" placeholder="nearest hundred">
+      <span class="feedback" id="sb-fb-${idx}"></span>
+    </div>
+  `).join('');
+  document.getElementById('sectionB').innerHTML = html;
+}
+
+function checkSectionB() {
+  sectionBData.forEach((item, idx) => {
+    const input = document.getElementById(`sb-${idx}`);
+    const fb = document.getElementById(`sb-fb-${idx}`);
+    const raw = (input.value || '').trim().replace(/,/g, '');
+    const got = parseFloat(raw);
+    const ok = got === item.answer;
+    input.classList.remove('correct', 'wrong');
+    input.classList.add(ok ? 'correct' : 'wrong');
+    fb.textContent = ok ? '✓ Correct' : '✗ Try again';
+    fb.className = 'feedback ' + (ok ? 'correct' : 'wrong');
+  });
+}
+
+function revealSectionB() {
+  sectionBData.forEach((item, idx) => {
+    const fb = document.getElementById(`sb-fb-${idx}`);
+    fb.textContent = '= ' + item.answer.toLocaleString();
+    fb.className = 'answer-reveal';
+  });
+}
+
+// ---------- OTHER (uncategorized) questions ----------
 let others = [];
 
 function makeQ_Shape() {
@@ -477,7 +548,7 @@ function makeQ_SubFrac() {
 }
 
 function generateOthers() {
-  others = [makeQ_Shape(), makeQ_Tool(), makeQ_Round(), makeQ_Budget(),
+  others = [makeQ_Shape(), makeQ_Tool(), makeQ_Budget(),
             makeQ_Shop(), makeQ_Fill(), makeQ_Partition(), makeQ_Perim(), makeQ_SubFrac()];
   const html = others.map((q, i) => renderOther(q, i)).join('');
   document.getElementById('otherQuestions').innerHTML = html;
@@ -591,6 +662,7 @@ function revealOthers() {
 // ---------- top-level ----------
 function generateAll() {
   generateSectionA();
+  generateSectionB();
   generateOthers();
 }
 generateAll();
