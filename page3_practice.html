@@ -653,7 +653,7 @@ function renderSectionF() {
   const html = sectionFData.map((item, idx) => `
     <div class="q-row">
       <span class="q-num">${idx + 1}.</span>
-      <span class="q-prompt" style="font-family:inherit;">
+      <span class="q-prompt" style="font-family:inherit;flex:0 0 auto;min-width:0;">
         ${htmlFrac(item.a, item.b)} &minus; ${htmlFrac(item.c, item.d)} =
       </span>
       <input type="text" id="sf-${idx}" placeholder="like 1/10">
